@@ -1,15 +1,20 @@
 package com.octocourse.app.bank;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 class BankAccount {
 
     private Integer balance = 0;
-    private Transaction transactions = null;
-    private CustomDate customLocalDateTime;
+    private ArrayList<Transaction> transactions = new ArrayList<>();
+    private BankDateTime bankDateTime;
 
-    BankAccount(CustomDate customLocalDateTime) {
-        this.customLocalDateTime = customLocalDateTime;
+    BankAccount(BankDateTime bankDateTime) {
+        this.bankDateTime = bankDateTime;
+    }
+
+    BankAccount(BankDateTime bankDateTime, Integer initialBalance) {
+        this.bankDateTime = bankDateTime;
+        this.balance = initialBalance;
     }
 
     Integer showBalance() {
@@ -18,14 +23,15 @@ class BankAccount {
 
     void depositMoney(Integer cash) {
         balance += cash;
-        transactions = new Transaction(LocalDateTime.now(), cash, balance);
+        transactions.add(new Transaction(bankDateTime.now(), cash, balance));
     }
 
     void withdrawalMoney(Integer cash) {
         balance -= cash;
+        transactions.add(new Transaction(bankDateTime.now(), -cash, balance));
     }
 
-    Transaction showTransactions() {
+    ArrayList<Transaction> showTransactions() {
         return transactions;
     }
 

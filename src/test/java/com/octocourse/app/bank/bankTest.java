@@ -1,9 +1,11 @@
 package com.octocourse.app.bank;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -12,17 +14,24 @@ import static org.mockito.Mockito.when;
 
 class bankTest {
 
+    private BankDateTime stubBankDateTime;
+    private BankAccount bankAccount;
+
+    @BeforeEach
+    void setUp() {
+        stubBankDateTime = mock(LocalDateTimeBankDateTime.class);
+        bankAccount = new BankAccount(stubBankDateTime);
+    }
+
     @Test
     void showTheBalanceOfTheAccount() {
         Integer emptyBalance = 0;
-        BankAccount emptyBankAccount = new BankAccount();
-        assertEquals(emptyBalance, emptyBankAccount.showBalance());
+        assertEquals(emptyBalance, bankAccount.showBalance());
     }
 
     @Test
     void depositsMoneyInBankAccount() {
         Integer balanceAfterDepositsMoneyInAccount = 2;
-        BankAccount bankAccount = new BankAccount();
 
         bankAccount.depositMoney(1);
         bankAccount.depositMoney(1);
@@ -33,7 +42,6 @@ class bankTest {
     @Test
     void withdrawalsMoneyInBankAccount() {
         Integer balanceAfterWithdrawalsMoneyInAccount = -2;
-        BankAccount bankAccount = new BankAccount();
 
         bankAccount.withdrawalMoney(1);
         bankAccount.withdrawalMoney(1);
@@ -46,8 +54,7 @@ class bankTest {
 
     @Test
     void showTransactionsOfTheBankAccount() {
-        Transaction noTransactions = null;
-        BankAccount bankAccount = new BankAccount();
+        ArrayList<Transaction> noTransactions = new ArrayList<>();
 
         assertEquals(noTransactions, bankAccount.showTransactions());
     }
@@ -57,32 +64,72 @@ class bankTest {
         LocalDateTime dateOfTheTransaction = LocalDateTime.of(2012, Month.JANUARY, 14, 13, 39);
         Transaction transactionAfterDeposit = new Transaction(dateOfTheTransaction, 50, 50);
 
-        CustomDate customLocalDateTime = new LocalDateTimeCustom();
-        BankAccount bankAccount = new BankAccount(customLocalDateTime);
-
-        LocalDateTime mockLocalDateTime = mock(LocalDateTime.class);
-        when(mockLocalDateTime.now()).thenReturn(dateOfTheTransaction);
-
+        when(stubBankDateTime.now()).thenReturn(dateOfTheTransaction);
         bankAccount.depositMoney(50);
 
-        assertThat(transactionAfterDeposit).isEqualToComparingFieldByField(bankAccount.showTransactions());
+        assertThat(transactionAfterDeposit).isEqualToComparingFieldByField(bankAccount.showTransactions().get(0));
     }
 
-    /*
-* Connaitre le solde de son compte
-* Faire un dépot
-* Faire une retrait
-Faire la liste des transactions sous la forme :
-date | heure | transaction | balance
-14/01/2012 | 00:00 | -50 | 30
-15/01/2012 | 01:00 | 50 | 30
- */
-/*
-TestList
-Retourner le solde du compte
-Si je fais un depot  alors le solde est mis à jour
-Si je fais un retrait le solde est mis à jour
-Je vois la liste des transactions de mon compte
-avec un balance diff de 0
- */
+    @Test
+    void showTransactionOfTheBankAccountAfterWithdrawalMoney() {
+        LocalDateTime dateOfTheTransaction = LocalDateTime.of(2012, Month.JANUARY, 14, 13, 39);
+        Transaction transactionAfterDeposit = new Transaction(dateOfTheTransaction, -50, -50);
+
+        when(stubBankDateTime.now()).thenReturn(dateOfTheTransaction);
+        bankAccount.withdrawalMoney(50);
+
+        assertThat(transactionAfterDeposit).isEqualToComparingFieldByField(bankAccount.showTransactions().get(0));
+    }
+
+    @Test
+    void showTransactionsAfterSomeMoneyMovesOnNewBankAccount() {
+        LocalDateTime dateOfTheTransaction = LocalDateTime.of(2012, Month.JANUARY, 14, 13, 39);
+        LocalDateTime dateOfTheTransaction2 = LocalDateTime.of(2013, Month.FEBRUARY, 15, 12, 40);
+        Transaction transactionAfterDeposit = new Transaction(dateOfTheTransaction, 50, 50);
+        Transaction transactionAfterDeposit2 = new Transaction(dateOfTheTransaction2, 30, 80);
+        Transaction transactionAfterDeposit3 = new Transaction(dateOfTheTransaction2, -15, 65);
+
+        ArrayList<Transaction> transactionsAfterDeposit = new ArrayList<>();
+        transactionsAfterDeposit.add(transactionAfterDeposit);
+        transactionsAfterDeposit.add(transactionAfterDeposit2);
+        transactionsAfterDeposit.add(transactionAfterDeposit3);
+
+        when(stubBankDateTime.now()).thenReturn(dateOfTheTransaction).thenReturn(dateOfTheTransaction2);
+        bankAccount.depositMoney(50);
+        bankAccount.depositMoney(30);
+        bankAccount.withdrawalMoney(15);
+
+        final Integer[] index = {0};
+        transactionsAfterDeposit.forEach(transaction -> {
+            assertThat(transaction).isEqualToComparingFieldByField(bankAccount.showTransactions().get(index[0]));
+            index[0]++;
+        });
+    }
+
+    @Test
+    void showTransactionsAfterSomeMoneyMovesOnBankAccountWithAlreadyBalance() {
+        LocalDateTime dateOfTheTransaction = LocalDateTime.of(2012, Month.JANUARY, 14, 13, 39);
+        LocalDateTime dateOfTheTransaction2 = LocalDateTime.of(2013, Month.FEBRUARY, 15, 12, 40);
+        Transaction transactionAfterDeposit = new Transaction(dateOfTheTransaction, 50, 80);
+        Transaction transactionAfterDeposit2 = new Transaction(dateOfTheTransaction2, 30, 110);
+        Transaction transactionAfterDeposit3 = new Transaction(dateOfTheTransaction2, -15, 95);
+
+        ArrayList<Transaction> transactionsAfterDeposit = new ArrayList<>();
+        transactionsAfterDeposit.add(transactionAfterDeposit);
+        transactionsAfterDeposit.add(transactionAfterDeposit2);
+        transactionsAfterDeposit.add(transactionAfterDeposit3);
+
+        BankAccount bankAccount = new BankAccount(stubBankDateTime, 30);
+        when(stubBankDateTime.now()).thenReturn(dateOfTheTransaction).thenReturn(dateOfTheTransaction2);
+        bankAccount.depositMoney(50);
+        bankAccount.depositMoney(30);
+        bankAccount.withdrawalMoney(15);
+
+        final Integer[] index = {0};
+        transactionsAfterDeposit.forEach(transaction -> {
+            assertThat(transaction).isEqualToComparingFieldByField(bankAccount.showTransactions().get(index[0]));
+            index[0]++;
+        });
+    }
+
 }
