@@ -1,5 +1,7 @@
-package com.octocourse.app;
+package com.octocourse.app.rover;
 
+import com.octocourse.app.rover.Position;
+import com.octocourse.app.rover.Rover;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
