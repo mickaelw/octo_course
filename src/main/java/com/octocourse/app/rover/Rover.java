@@ -1,49 +1,49 @@
 package com.octocourse.app.rover;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Supplier;
+
 class Rover {
 
     private Position position = new Position(0, 0);
     private RoverMove roverMove = new RoverMoveFromEst();
+    private Map<RoverCommand, Supplier> availableCommands = new HashMap<>();
+
+    Rover() {
+        availableCommands.put(RoverCommand.forward, forwardOneBox());
+        availableCommands.put(RoverCommand.backward, backwardOneBox());
+        availableCommands.put(RoverCommand.turnLeft, turnOnTheLeft());
+        availableCommands.put(RoverCommand.turnRight, turnOnTheRight());
+    }
 
     String position() {
         return position.toString();
     }
 
     void move(String commands) {
-        for (String command : commands.split(""))
-            interpretCommand(command);
+        for (String command : splitCommands(commands))
+            availableCommands.get(RoverCommand.convertToRoverCommand(command)).get();
     }
 
-    private void interpretCommand(String command) {
-        switch (RoverCommand.valueOf(command)) {
-            case f:
-                forwardOneBox();
-                break;
-            case b:
-                backwardOneBox();
-                break;
-            case l:
-                turnOnTheLeft();
-                break;
-            case r:
-                turnOnTheRight();
-                break;
-        }
+    private String[] splitCommands(String commands) {
+        return commands.split("");
     }
 
-    private void turnOnTheRight() {
-        roverMove = roverMove.turnRight();
+    private Supplier turnOnTheRight() {
+        return () -> roverMove = roverMove.turnRight();
     }
 
-    private void turnOnTheLeft() {
-        roverMove = roverMove.turnLeft();
+    private Supplier turnOnTheLeft() {
+        return () -> roverMove = roverMove.turnLeft();
     }
 
-    private void forwardOneBox() {
-        position = roverMove.forward(position);
+    private Supplier forwardOneBox() {
+        return () -> position = roverMove.forward(position);
     }
 
-    private void backwardOneBox() {
-        position = roverMove.backward(position);
+    private Supplier backwardOneBox() {
+        return () -> position = roverMove.backward(position);
     }
+
 }
