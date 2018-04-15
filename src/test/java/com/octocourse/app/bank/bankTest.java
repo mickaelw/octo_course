@@ -33,8 +33,8 @@ class bankTest {
     void depositsMoneyInBankAccount() {
         Integer balanceAfterDepositsMoneyInAccount = 2;
 
-        bankAccount.depositMoney(1);
-        bankAccount.depositMoney(1);
+        bankAccount.deposit(1);
+        bankAccount.deposit(1);
 
         assertEquals(balanceAfterDepositsMoneyInAccount, bankAccount.showBalance());
     }
@@ -43,13 +43,10 @@ class bankTest {
     void withdrawalsMoneyInBankAccount() {
         Integer balanceAfterWithdrawalsMoneyInAccount = -2;
 
-        bankAccount.withdrawalMoney(1);
-        bankAccount.withdrawalMoney(1);
+        bankAccount.withdrawal(1);
+        bankAccount.withdrawal(1);
 
-        assertEquals(
-                balanceAfterWithdrawalsMoneyInAccount,
-                bankAccount.showBalance()
-        );
+        assertEquals(balanceAfterWithdrawalsMoneyInAccount, bankAccount.showBalance());
     }
 
     @Test
@@ -65,7 +62,7 @@ class bankTest {
         Transaction transactionAfterDeposit = new Transaction(dateOfTheTransaction, 50, 50);
 
         when(stubBankDateTime.now()).thenReturn(dateOfTheTransaction);
-        bankAccount.depositMoney(50);
+        bankAccount.deposit(50);
 
         assertThat(transactionAfterDeposit).isEqualToComparingFieldByField(bankAccount.showTransactions().get(0));
     }
@@ -76,7 +73,7 @@ class bankTest {
         Transaction transactionAfterDeposit = new Transaction(dateOfTheTransaction, -50, -50);
 
         when(stubBankDateTime.now()).thenReturn(dateOfTheTransaction);
-        bankAccount.withdrawalMoney(50);
+        bankAccount.withdrawal(50);
 
         assertThat(transactionAfterDeposit).isEqualToComparingFieldByField(bankAccount.showTransactions().get(0));
     }
@@ -95,9 +92,9 @@ class bankTest {
         transactionsAfterDeposit.add(transactionAfterDeposit3);
 
         when(stubBankDateTime.now()).thenReturn(dateOfTheTransaction).thenReturn(dateOfTheTransaction2);
-        bankAccount.depositMoney(50);
-        bankAccount.depositMoney(30);
-        bankAccount.withdrawalMoney(15);
+        bankAccount.deposit(50);
+        bankAccount.deposit(30);
+        bankAccount.withdrawal(15);
 
         final Integer[] index = {0};
         transactionsAfterDeposit.forEach(transaction -> {
@@ -121,15 +118,20 @@ class bankTest {
 
         BankAccount bankAccount = new BankAccount(stubBankDateTime, 30);
         when(stubBankDateTime.now()).thenReturn(dateOfTheTransaction).thenReturn(dateOfTheTransaction2);
-        bankAccount.depositMoney(50);
-        bankAccount.depositMoney(30);
-        bankAccount.withdrawalMoney(15);
+        bankAccount.deposit(50);
+        bankAccount.deposit(30);
+        bankAccount.withdrawal(15);
 
-        final Integer[] index = {0};
+        final Integer[] transactionNumber = {0};
         transactionsAfterDeposit.forEach(transaction -> {
-            assertThat(transaction).isEqualToComparingFieldByField(bankAccount.showTransactions().get(index[0]));
-            index[0]++;
+            assertThat(transaction).isEqualToComparingFieldByField(bankAccount.showTransactions().get(transactionNumber[0]));
+            transactionNumber[0]++;
         });
     }
 
+    @Test
+    void testRest() {
+        RESTBankTransfer restBankTransfer = new RESTBankTransfer();
+        restBankTransfer.post();
+    }
 }

@@ -1,4 +1,4 @@
-package com.octocourse.app;
+package com.octocourse.app.connect4;
 
 class Grid {
 

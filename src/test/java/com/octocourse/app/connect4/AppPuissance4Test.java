@@ -1,8 +1,7 @@
-package com.octocourse.app;
+package com.octocourse.app.connect4;
 
 import org.junit.jupiter.api.Test;
 
-import static java.lang.System.out;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

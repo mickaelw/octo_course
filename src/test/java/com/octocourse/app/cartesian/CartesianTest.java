@@ -1,8 +1,6 @@
-package com.octocourse.app;
+package com.octocourse.app.cartesian;
 
 import org.junit.jupiter.api.Test;
-
-import java.awt.geom.Point2D;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

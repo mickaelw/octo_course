@@ -21,12 +21,12 @@ class BankAccount {
         return balance;
     }
 
-    void depositMoney(Integer cash) {
+    void deposit(Integer cash) {
         balance += cash;
         transactions.add(new Transaction(bankDateTime.now(), cash, balance));
     }
 
-    void withdrawalMoney(Integer cash) {
+    void withdrawal(Integer cash) {
         balance -= cash;
         transactions.add(new Transaction(bankDateTime.now(), -cash, balance));
     }
